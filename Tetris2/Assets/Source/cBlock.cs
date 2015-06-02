@@ -19,4 +19,8 @@ public class cBlock {
 		Renderer renderer = m_cube.GetComponent<Renderer> ();
 		renderer.material = m_material;
 	}
+
+	public void MovePosition (Vector3 position) {
+		m_cube.transform.Translate (position);
+	}
 }

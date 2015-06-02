@@ -14,20 +14,23 @@ public class cTetrimino {
 	const int width = 4;
 	const int height = 4;
 	const int blockNum = 4;
+	const int moveSpeed = 1;
 
 	cBlock [] m_blocks = new cBlock [blockNum];
 	bool [,] m_form = new bool [height, width];
 	eTetriminoType m_type;
+	Vector3 m_position;
 
 	public void CreateTatrimino (eTetriminoType type) {
 		m_type = type;
 		InitializeForm ();
+		m_position = new Vector3 (0f, 0f, 0f);
 	}
 
 	void InitializeForm () {
-		for (int y = 0; y < height; y++) {
-			for (int x = 0; x < width; x++) {
-				m_form [y, x] = false;
+		for (int dy = 0; dy < height; dy++) {
+			for (int dx = 0; dx < width; dx++) {
+				m_form [dy, dx] = false;
 			}
 		}
 
@@ -56,10 +59,10 @@ public class cTetrimino {
 		}
 
 		int count = 0;
-		for (int y = 0; y < height; y++) {
-			for(int x = 0; x < width; x++) {
-				if(m_form [y, x]) {
-					m_blocks [count++].SetPosition (new Vector3 (x, y, 0f));
+		for (int dy = 0; dy < height; dy++) {
+			for(int dx = 0; dx < width; dx++) {
+				if(m_form [dy, dx]) {
+					m_blocks [count++].SetPosition (new Vector3 (dx, dy, 0f));
 				}
 			}
 		}
@@ -145,8 +148,46 @@ public class cTetrimino {
 		m_form [2, 2] = true;
 		
 		for (int i = 0; i < blockNum; i++) {
-			m_blocks[i].CreateCube ();
-			m_blocks[i].SetColor (eMaterialType.Blue);
+			m_blocks [i].CreateCube ();
+			m_blocks [i].SetColor (eMaterialType.Blue);
 		}
+	}
+
+	public void Move (int moveX) {
+		for (int i = 0; i < blockNum; i++) {
+			m_blocks [i].MovePosition (new Vector3 (moveX, 0, 0));
+		}
+
+		m_position.x += moveX;
+	}
+
+	public void Rotation (int rx, int ry) {
+		bool [,] form = new bool [height, width];
+
+		for (int dy = 0; dy < height; dy++) {
+			for (int dx = 0; dx < width; dx++) {
+				int x = Mathf.Abs (rx - dy);
+				int y = Mathf.Abs (ry - dx);
+				form [y, x] = m_form [dy, dx];
+			}
+		}
+
+		int count = 0;
+		for (int dy = 0; dy < height; dy++) {
+			for (int dx = 0; dx < width; dx++) {
+				m_form [dy, dx] = form [dy, dx];
+				if(m_form [dy, dx]) {
+					m_blocks [count++].SetPosition (new Vector3 (dx + m_position.x, dy + m_position.y, 0f));
+				}
+			}
+		}
+	}
+
+	public void Fall () {
+		for (int i = 0; i < blockNum; i++) {
+			m_blocks [i].MovePosition (new Vector3 (0, -moveSpeed, 0));
+		}
+
+		m_position.y += -moveSpeed;
 	}
 }
