@@ -2,18 +2,21 @@
 using System.Collections;
 
 public class cTitleStateManager {
+	// ステート.
 	enum eState {
 		Waiting,
 		TransitionScene,
 	}
 
-	private static cTitleStateManager s_instance;
-	private eState m_state;
+	private static cTitleStateManager s_instance;		// インスタンス.
+	private eState m_state;		// ステート.
 
+	// コンストラクタ.
 	private cTitleStateManager () {
 
 	}
 
+	// インスタンス.
 	public static cTitleStateManager Instance {
 		get {
 			if(s_instance == null) {
@@ -24,6 +27,7 @@ public class cTitleStateManager {
  		}
 	}
 
+	// 更新.
 	public void Update () {
 		switch (m_state) {
 		case eState.Waiting:
@@ -34,6 +38,7 @@ public class cTitleStateManager {
 		}
 	}
 
+	// 次のステートをセット.
 	void Transit (eState nextState) {
 		switch (nextState) {
 		case eState.Waiting:
@@ -45,10 +50,12 @@ public class cTitleStateManager {
 		m_state = nextState;
 	}
 
+	// 待ちの開始.
 	void StartWaiting () {
 
 	}
 
+	// 待ちの更新.
 	void UpdateWaiting () {
 		if (Input.GetKeyDown (KeyCode.Return)) {
 			Transit (eState.TransitionScene);
@@ -58,10 +65,12 @@ public class cTitleStateManager {
 		}
 	}
 
+	// 遷移のスタート.
 	void StartSceneTransition () {
 
 	}
 
+	// 遷移の更新.
 	void UpdateSceneTransition () {
 	
 	}

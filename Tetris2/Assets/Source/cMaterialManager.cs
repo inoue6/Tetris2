@@ -3,8 +3,9 @@ using UnityEditor;
 using System.Collections;
 
 public class cMaterialManager : MonoBehaviour {
-	static cMaterialManager s_instance;
+	static cMaterialManager s_instance;		// インスタンス.
 
+	// 各色のマテリアル.
 	Material m_red;
 	Material m_blue;
 	Material m_yellow;
@@ -12,8 +13,8 @@ public class cMaterialManager : MonoBehaviour {
 	Material m_orange;
 	Material m_lightBlue;
 	Material m_yellowGreen;
-
-	bool m_initializeFlag = false;
+	
+	bool m_initializeFlag = false;		// 初期化フラグ.
 
 	void Awake () {
 		if (s_instance == null) {
@@ -26,6 +27,8 @@ public class cMaterialManager : MonoBehaviour {
 		}
 	}
 
+	// インスタンスを取得.
+	// 戻り値：インスタンス.
 	public static cMaterialManager GetInstance () {
 		if(s_instance == null) {
 			GameObject gameObject = new GameObject ("MaterialManager");
@@ -35,6 +38,7 @@ public class cMaterialManager : MonoBehaviour {
 		return s_instance;
 	}
 
+	// マテリアルの初期化.
 	public void Initialize () {
 		if (!m_initializeFlag) {
 			m_red = AssetDatabase.LoadAssetAtPath ("Assets/Material/Tetrimino/Red.mat", typeof(Material)) as Material;
@@ -49,6 +53,9 @@ public class cMaterialManager : MonoBehaviour {
 		m_initializeFlag = true;
 	}
 
+	// マテリアル取得.
+	// 第一引数：マテリアルのタイプ.
+	// 戻り値：マテリアル.
 	public Material GetMaterial (eMaterialType type) {
 		Material material = null;
 

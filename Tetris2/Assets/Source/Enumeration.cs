@@ -1,13 +1,16 @@
-﻿public enum eScene {
+﻿// シーン.
+public enum eScene {
 	Title,
 	GameMain,
 }
 
+// フェード.
 public enum eFade {
 	FadeIn,
 	FadeOut,
 }
 
+// マテリアルのタイプ.
 public enum eMaterialType {
 	Red,
 	Blue,
@@ -18,6 +21,7 @@ public enum eMaterialType {
 	YellowGreen,
 }
 
+// キーのタイプ.
 public enum eKeyType {
 	Up,
 	Down,

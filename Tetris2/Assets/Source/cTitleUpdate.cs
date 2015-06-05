@@ -2,14 +2,20 @@
 using System.Collections;
 
 public class cTitleUpdate : MonoBehaviour {
-	cTetrimino tetrimino;
+	const int Size = 3;		// 通常のテトリミノ配列のサイズ.
+	const int ISize = 4;		// Iテトリミノの配列のサイズ.
+	const int MoveSpeed = 1;		// 移動スピード.
+
+
+	cGhost ghost;
 	float time = 0f;
 	// Use this for initialization
 	void Start () {
 		cSceneManager.GetInstance ().Initialize ();
 		cMaterialManager.GetInstance ().Initialize ();
-		tetrimino = new cTetrimino ();
-		tetrimino.CreateTatrimino (cTetrimino.eTetriminoType.eI_Tetrimino);
+		cTetriminoManager.GetInstance ().Initialize ();
+		ghost = new cGhost ();
+		ghost.CreateGhost ();
 	}
 	
 	// Update is called once per frame
@@ -17,25 +23,29 @@ public class cTitleUpdate : MonoBehaviour {
 		cTitleStateManager.Instance.Update ();
 
 		if (Input.GetKeyDown (KeyCode.A)) {
-			tetrimino.Rotation (0, 3);
+			cTetriminoManager.GetInstance ().GetTetrimino ().Rotation (cTetriminoManager.GetInstance ().GetTetrimino ().GetSize ()-1, 0);
 		}
 
 		if (Input.GetKeyDown (KeyCode.S)) {
-			tetrimino.Rotation (3, 0);
+			cTetriminoManager.GetInstance ().GetTetrimino ().Rotation (0, cTetriminoManager.GetInstance ().GetTetrimino ().GetSize ()-1);
 		}
 
 		if (Input.GetKeyDown (KeyCode.LeftArrow)) {
-			tetrimino.Move (-1);
+			cTetriminoManager.GetInstance ().GetTetrimino ().Move (-MoveSpeed);
 		}
 
 		if (Input.GetKeyDown (KeyCode.RightArrow)) {
-			tetrimino.Move (1);
+			cTetriminoManager.GetInstance ().GetTetrimino ().Move (MoveSpeed);
 		}
 
 		if (time >= 1f) {
-			tetrimino.Fall ();
+			cTetriminoManager.GetInstance ().GetTetrimino ().Fall ();
 			time = 0f;
 		}
+
+		cTetriminoManager.GetInstance ().SetNext ();
+		ghost.SetGhost (cTetriminoManager.GetInstance ().GetTetrimino ());
+		ghost.DeleteGhost (cTetriminoManager.GetInstance ().GetTetrimino ());
 
 		time += Time.deltaTime;
 	}

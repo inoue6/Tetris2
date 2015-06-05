@@ -2,6 +2,7 @@
 using System.Collections;
 
 public class cSceneManager : MonoBehaviour {
+	// ステート.
 	enum eState {
 		NothingIsDone,
 		FadeIn,
@@ -9,10 +10,10 @@ public class cSceneManager : MonoBehaviour {
 		FadeOut,
 	}
 
-	static cSceneManager s_instance;
-	cFade m_fade;
-	eScene m_scene;
-	eState m_state;
+	static cSceneManager s_instance;		// インスタンス.
+	cFade m_fade;		// フェード.
+	eScene m_scene;		// シーン.
+	eState m_state;		// ステート.
 
 	void Awake () {
 		if (s_instance == null) {
@@ -62,12 +63,14 @@ public class cSceneManager : MonoBehaviour {
 	}
 
 	// 切り替えるシーンをセット.
+	// 第一引数：次のシーン.
 	public void SetNextScene (eScene nextScene) {
 		m_scene = nextScene;
 		Transit (eState.FadeOut);
 	}
 
 	// ステート切り替え.
+	// 第一引数：次のステート.
 	void Transit (eState nextState) {
 		switch (nextState) {
 		case eState.NothingIsDone:
@@ -85,6 +88,7 @@ public class cSceneManager : MonoBehaviour {
 		m_state = nextState;
 	}
 
+	// シーン遷移の更新.
 	void UpdateSceneTransition () {
 		switch (m_scene) {
 		case eScene.Title:
@@ -98,7 +102,7 @@ public class cSceneManager : MonoBehaviour {
 		Transit (eState.FadeIn);
 	}
 
-	// 
+	// フェードの初期化.
 	public void Initialize () {
 		cFade fade = gameObject.GetComponent<cFade> ();
 		if (fade == null) {

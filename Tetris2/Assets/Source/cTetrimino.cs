@@ -2,180 +2,305 @@
 using System.Collections;
 
 public class cTetrimino {
-	public enum eTetriminoType {
-		eI_Tetrimino,
-		eO_Tetrimino,
-		eT_Tetrimino,
-		eS_Tetrimino,
-		eZ_Tetrimino,
-		eL_Tetrimino,
-		eJ_Tetrimino,
+	// テトリミノのタイプ.
+	public const int I_Tetrimino = 0;
+	public const int O_Tetrimino = 1;
+	public const int T_Tetrimino = 2;
+	public const int S_Tetrimino = 3;
+	public const int Z_Tetrimino = 4;
+	public const int L_Tetrimino = 5;
+	public const int J_Tetrimino = 6;
+	
+	const int Size = 3;		// 通常のテトリミノ配列のサイズ.
+	const int ISize = 4;		// Iテトリミノの配列のサイズ.
+	const int BlockNum = 4;		// キューブオブジェクトの数.
+	const int MoveSpeed = 1;	// 移動するスピード.
+	const float InitializeX = 5f;	// ブロックが生成されるx座標.
+	const float InitializeY = 4f;	// ブロックが生成されるy座標.
+	const float InitializeZ = 0f;	// ブロックが生成されるz座標.
+
+	cBlock [] m_blocks = new cBlock [BlockNum];		// ブロック.
+	bool [,] m_form;		// テトリミノ形状　true・ブロックがある　falseブロックはない.
+	int m_type;		// テトリミノのタイプ.
+	Vector3 m_position;		// テトリミノの現在の場所.
+	int m_size;
+
+	// テトリミノ生成.
+	// 第一引数：テトリミノのタイプ.
+	public void CreateTatrimino (int type) {
+		InitializeForm (type);
+		m_position = new Vector3 (InitializeX, InitializeY-m_size, InitializeZ);
+		SetPosition (m_position);
 	}
-	const int width = 4;
-	const int height = 4;
-	const int blockNum = 4;
-	const int moveSpeed = 1;
 
-	cBlock [] m_blocks = new cBlock [blockNum];
-	bool [,] m_form = new bool [height, width];
-	eTetriminoType m_type;
-	Vector3 m_position;
-
-	public void CreateTatrimino (eTetriminoType type) {
+	// 形状の初期化.
+	public void InitializeForm (int type) {
 		m_type = type;
-		InitializeForm ();
-		m_position = new Vector3 (0f, 0f, 0f);
-	}
-
-	void InitializeForm () {
-		for (int dy = 0; dy < height; dy++) {
-			for (int dx = 0; dx < width; dx++) {
-				m_form [dy, dx] = false;
-			}
-		}
 
 		switch (m_type) {
-		case eTetriminoType.eI_Tetrimino:
+		case I_Tetrimino:
 			ITetrimino ();
 			break;
-		case eTetriminoType.eO_Tetrimino:
+		case O_Tetrimino:
 			OTetrimino ();
 			break;
-		case eTetriminoType.eT_Tetrimino:
+		case T_Tetrimino:
 			TTetrimino ();
 			break;
-		case eTetriminoType.eS_Tetrimino:
+		case S_Tetrimino:
 			STetrimino ();
 			break;
-		case eTetriminoType.eZ_Tetrimino:
+		case Z_Tetrimino:
 			ZTetrimino ();
 			break;
-		case eTetriminoType.eL_Tetrimino:
+		case L_Tetrimino:
 			LTetrimino ();
 			break;
-		case eTetriminoType.eJ_Tetrimino:
+		case J_Tetrimino:
 			JTetrimino ();
 			break;
 		}
+	}
 
+	public void SetPosition (Vector3 position) {
 		int count = 0;
-		for (int dy = 0; dy < height; dy++) {
-			for(int dx = 0; dx < width; dx++) {
+		for (int dy = 0; dy < m_size; dy++) {
+			for(int dx = 0; dx < m_size; dx++) {
 				if(m_form [dy, dx]) {
-					m_blocks [count++].SetPosition (new Vector3 (dx, dy, 0f));
+					m_blocks [count++].SetPosition (new Vector3 (dx+position.x, dy+position.y, 0f));
 				}
 			}
 		}
 	}
 
-	void ITetrimino () {
-		m_form [0, 1] = true;
-		m_form [1, 1] = true;
-		m_form [2, 1] = true;
-		m_form [3, 1] = true;
+	// 形状を管理する配列の初期化.
+	// 配列のサイズ.
+	void FormSize (int size) {
+		m_size = size;
+		m_form = new bool [m_size, m_size];
 
-		for (int i = 0; i < blockNum; i++) {
+		for (int dy = 0; dy < m_size; dy++) {
+			for (int dx = 0; dx < m_size; dx++) {
+				m_form [dy, dx] = false;
+			}
+		}
+	}
+
+	// Iテトリミノ.
+	void ITetrimino () {
+		IForm ();
+
+		for (int i = 0; i < BlockNum; i++) {
 			m_blocks[i] = new cBlock();
 			m_blocks[i].CreateCube ();
-			m_blocks[i].SetColor (eMaterialType.LightBlue);
+			m_blocks[i].SetMaterial (eMaterialType.LightBlue);
 		}
 	}
 
+	public void IForm () {
+		FormSize (ISize);
+
+		m_form [2, 0] = true;
+		m_form [2, 1] = true;
+		m_form [2, 2] = true;
+		m_form [2, 3] = true;
+	}
+
+	//Oテトリミノ.
 	void OTetrimino () {
-		m_form [1, 1] = true;
-		m_form [2, 1] = true;
-		m_form [1, 2] = true;
-		m_form [2, 2] = true;
+		OForm ();
 
-		for (int i = 0; i < blockNum; i++) {
+		for (int i = 0; i < BlockNum; i++) {
+			m_blocks[i] = new cBlock();
 			m_blocks[i].CreateCube ();
-			m_blocks[i].SetColor (eMaterialType.Yellow);
+			m_blocks[i].SetMaterial (eMaterialType.Yellow);
 		}
 	}
 
+	public void OForm () {
+		FormSize (Size);
+		
+		m_form [1, 0] = true;
+		m_form [1, 1] = true;
+		m_form [2, 0] = true;
+		m_form [2, 1] = true;
+	}
+
+	// Tテトリミノ.
 	void TTetrimino () {
-		m_form [2, 0] = true;
-		m_form [1, 1] = true;
-		m_form [2, 1] = true;
-		m_form [2, 2] = true;
+		TForm ();
 		
-		for (int i = 0; i < blockNum; i++) {
+		for (int i = 0; i < BlockNum; i++) {
+			m_blocks[i] = new cBlock();
 			m_blocks[i].CreateCube ();
-			m_blocks[i].SetColor (eMaterialType.Purple);
+			m_blocks[i].SetMaterial (eMaterialType.Purple);
 		}
 	}
 
-	void STetrimino () {
-		m_form [2, 0] = true;
+	public void TForm () {
+		FormSize (Size);
+		
+		m_form [1, 0] = true;
 		m_form [1, 1] = true;
-		m_form [2, 1] = true;
 		m_form [1, 2] = true;
+		m_form [2, 1] = true;
+	}
+
+	// Sテトリミノ.
+	void STetrimino () {
+		SForm ();
 		
-		for (int i = 0; i < blockNum; i++) {
+		for (int i = 0; i < BlockNum; i++) {
+			m_blocks[i] = new cBlock();
 			m_blocks[i].CreateCube ();
-			m_blocks[i].SetColor (eMaterialType.YellowGreen);
+			m_blocks[i].SetMaterial (eMaterialType.YellowGreen);
 		}
 	}
 
+	public void SForm () {
+		FormSize (Size);
+		
+		m_form [1, 1] = true;
+		m_form [1, 2] = true;
+		m_form [2, 0] = true;
+		m_form [2, 1] = true;
+	}
+
+	// Zテトリミノ.
 	void ZTetrimino () {
+		ZForm ();
+		
+		for (int i = 0; i < BlockNum; i++) {
+			m_blocks[i] = new cBlock();
+			m_blocks[i].CreateCube ();
+			m_blocks[i].SetMaterial (eMaterialType.Red);
+		}
+	}
+
+	public void ZForm () {
+		FormSize (Size);
+		
 		m_form [1, 0] = true;
 		m_form [1, 1] = true;
 		m_form [2, 1] = true;
 		m_form [2, 2] = true;
-		
-		for (int i = 0; i < blockNum; i++) {
-			m_blocks[i].CreateCube ();
-			m_blocks[i].SetColor (eMaterialType.Red);
-		}
 	}
 
+	// Lテトリミノ.
 	void LTetrimino () {
-		m_form [0, 1] = true;
-		m_form [1, 1] = true;
-		m_form [2, 1] = true;
-		m_form [2, 2] = true;
+		LForm ();
 		
-		for (int i = 0; i < blockNum; i++) {
+		for (int i = 0; i < BlockNum; i++) {
+			m_blocks[i] = new cBlock();
 			m_blocks[i].CreateCube ();
-			m_blocks[i].SetColor (eMaterialType.Orange);
+			m_blocks[i].SetMaterial (eMaterialType.Orange);
 		}
 	}
 
+	public void LForm () {
+		FormSize (Size);
+		
+		m_form [1, 0] = true;
+		m_form [1, 1] = true;
+		m_form [1, 2] = true;
+		m_form [2, 0] = true;
+	}
+
+	// Jテトリミノ.
 	void JTetrimino () {
-		m_form [2, 1] = true;
-		m_form [0, 2] = true;
+		JForm ();
+		
+		for (int i = 0; i < BlockNum; i++) {
+			m_blocks[i] = new cBlock();
+			m_blocks [i].CreateCube ();
+			m_blocks [i].SetMaterial (eMaterialType.Blue);
+		}
+	}
+
+	public void JForm () {
+		FormSize (Size);
+		
+		m_form [1, 0] = true;
+		m_form [1, 1] = true;
 		m_form [1, 2] = true;
 		m_form [2, 2] = true;
-		
-		for (int i = 0; i < blockNum; i++) {
-			m_blocks [i].CreateCube ();
-			m_blocks [i].SetColor (eMaterialType.Blue);
-		}
 	}
 
+	// 移動.
+	// 第一引数：移動する値.
 	public void Move (int moveX) {
-		for (int i = 0; i < blockNum; i++) {
+		for (int i = 0; i < BlockNum; i++) {
+			int blockPosition = (int)(m_blocks [i].GetCube ().transform.position.x + moveX);
+			if (blockPosition < 2 || blockPosition > 11) {
+				return;
+			}
+		}
+
+		int px = (int)m_position.x + moveX;
+		int py = (int)m_position.y;
+		bool [,] form = cBlockManager.GetInstance ().GetCollision (px, py, m_size);
+
+		for (int dy = 0; dy < m_size; dy++) {
+			for (int dx = 0; dx < m_size; dx++) {
+				if (m_form [dy, dx] && form [dy, dx]) {
+					return;
+				}
+			}
+		}
+
+		for (int i = 0; i < BlockNum; i++) {
 			m_blocks [i].MovePosition (new Vector3 (moveX, 0, 0));
 		}
 
 		m_position.x += moveX;
 	}
 
+	// 回転.
+	// 第一引数：回転時の配列添え字x.
+	// 第二引数：回転時の配列添え字y.
 	public void Rotation (int rx, int ry) {
-		bool [,] form = new bool [height, width];
+		if (m_type == O_Tetrimino) {
+			return;
+		}
 
-		for (int dy = 0; dy < height; dy++) {
-			for (int dx = 0; dx < width; dx++) {
+		bool [,] afterForm = new bool [m_size, m_size];
+
+		for (int dy = 0; dy < m_size; dy++) {
+			for (int dx = 0; dx < m_size; dx++) {
 				int x = Mathf.Abs (rx - dy);
 				int y = Mathf.Abs (ry - dx);
-				form [y, x] = m_form [dy, dx];
+				afterForm [y, x] = m_form [dy, dx];
 			}
 		}
 
+		int px = (int)m_position.x;
+		int py = (int)m_position.y;
+		int check = CheckCollision (px, py);
+
+		if (check == 0) {
+			if (m_type == I_Tetrimino) {
+				return;
+			}
+			if (CheckCollision (px+1, py) != -1) {
+				return;
+			}
+		}
+		if (check == 2) {
+			if (m_type == I_Tetrimino) {
+				return;
+			}
+			if (CheckCollision (px+1, py) != -1) {
+				return;
+			}
+		}
+		if (check == 1) {
+			return;
+		}
+
 		int count = 0;
-		for (int dy = 0; dy < height; dy++) {
-			for (int dx = 0; dx < width; dx++) {
-				m_form [dy, dx] = form [dy, dx];
+		for (int dy = 0; dy < m_size; dy++) {
+			for (int dx = 0; dx < m_size; dx++) {
+				m_form [dy, dx] = afterForm [dy, dx];
 				if(m_form [dy, dx]) {
 					m_blocks [count++].SetPosition (new Vector3 (dx + m_position.x, dy + m_position.y, 0f));
 				}
@@ -183,11 +308,65 @@ public class cTetrimino {
 		}
 	}
 
+	// 落下.
 	public void Fall () {
-		for (int i = 0; i < blockNum; i++) {
-			m_blocks [i].MovePosition (new Vector3 (0, -moveSpeed, 0));
+		for (int i = 0; i < BlockNum; i++) {
+			m_blocks [i].MovePosition (new Vector3 (0, -MoveSpeed, 0));
 		}
 
-		m_position.y += -moveSpeed;
+		m_position.y += MoveSpeed;
+	}
+
+	// 衝突判定.
+	// 第一引数：ブロックマネージャーから持ってくるポイントx.
+	// 第二引数：ブロックマネージャーから持ってくるポイントy.
+	// 戻り値：０・左側衝突　１・真ん中衝突　２・右側衝突　−１・衝突していない.
+	int CheckCollision (int px, int py) {
+		bool [,] form = cBlockManager.GetInstance ().GetCollision (px, py, m_size);
+
+		for (int dy = 0; dy < m_size; dy++) {
+			for (int dx = 0; dx < m_size; dx++) {
+				if (m_form [dy, dx] && form [dy, dx]) {
+					return dx;
+				}
+			}
+		}
+
+		return -1;
+	}
+
+	// テトリミノのタイプを取得.
+	// 戻り値：テトリミノのタイプ.
+	public int GetTetriminoType () {
+		return m_type;
+	}
+
+	public Vector3 [] GetBlockPosition () {
+		Vector3 [] position = new  Vector3 [BlockNum];
+		int count = 0;
+
+		for (int dy = 0; dy < m_size; dy++) {
+			for (int dx = 0; dx < m_size; dx++) {
+				if (m_form [dy, dx]) {
+					position [count++] = new Vector3 (dx, dy, 0f);
+				}
+			}
+		}
+
+		return position;
+	}
+
+	public Vector3 GetTetriminoPosition () {
+		Vector3 position = new Vector3 (m_position.x, m_position.y, m_position.z);
+
+		return m_position;
+	}
+
+	public bool [,] GetForm () {
+		return m_form;
+	}
+
+	public int GetSize () {
+		return m_size;
 	}
 }
