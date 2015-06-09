@@ -18,6 +18,10 @@ public class cTetrimino {
 	const float InitializeX = 5f;	// ブロックが生成されるx座標.
 	const float InitializeY = 4f;	// ブロックが生成されるy座標.
 	const float InitializeZ = 0f;	// ブロックが生成されるz座標.
+	const int CheckUnder = 18;
+	const int MaxUnder = 21;
+	const int LeftWall = 1;
+	const int RightWall = 12;
 
 	cBlock [] m_blocks = new cBlock [BlockNum];		// ブロック.
 	bool [,] m_form;		// テトリミノ形状　true・ブロックがある　falseブロックはない.
@@ -265,68 +269,130 @@ public class cTetrimino {
 
 		bool [,] afterForm = new bool [m_size, m_size];
 
+		int [] afterX = new int [BlockNum];
+		int [] afterY = new int [BlockNum];
+		int count = 0;
 		for (int dy = 0; dy < m_size; dy++) {
 			for (int dx = 0; dx < m_size; dx++) {
 				int x = Mathf.Abs (rx - dy);
 				int y = Mathf.Abs (ry - dx);
 				afterForm [y, x] = m_form [dy, dx];
+
+				if (afterForm [y, x]) {
+					afterX [count] = x;
+					afterY [count++] = y;
+				}
 			}
 		}
 
 		int px = (int)m_position.x;
 		int py = (int)m_position.y;
-		int check = CheckCollision (px, py);
+		int check = CheckCollision (afterForm, px, py);
+		int moveX = 0;
 
 		if (check == 0) {
 			if (m_type == I_Tetrimino) {
 				return;
 			}
-			if (CheckCollision (px+1, py) != -1) {
+			if (CheckCollision (afterForm, px+1, py) != -1) {
 				return;
+			}
+			else {
+				moveX = 1;
 			}
 		}
 		if (check == 2) {
 			if (m_type == I_Tetrimino) {
 				return;
 			}
-			if (CheckCollision (px+1, py) != -1) {
+			if (CheckCollision (afterForm, px+1, py) != -1) {
 				return;
+			}
+			else {
+				moveX = -1;
 			}
 		}
 		if (check == 1) {
 			return;
 		}
 
-		int count = 0;
+		for (int i = 0; i < BlockNum; i++) {
+			int blockPosition = (int)(afterX [i] + m_position.x);
+			if (blockPosition <= LeftWall) {
+				if (m_type == I_Tetrimino) {
+					return;
+				}
+				if (CheckCollision (afterForm, px+1, py) != -1) {
+					return;
+				}
+				moveX = 1;
+			}
+			else if (blockPosition >= RightWall) {
+				if (m_type == I_Tetrimino) {
+					return;
+				}
+				if (CheckCollision (afterForm, px-1, py) != -1) {
+					return;
+				}
+				moveX = -1;
+			}
+		}
+
+		count = 0;
 		for (int dy = 0; dy < m_size; dy++) {
 			for (int dx = 0; dx < m_size; dx++) {
 				m_form [dy, dx] = afterForm [dy, dx];
 				if(m_form [dy, dx]) {
-					m_blocks [count++].SetPosition (new Vector3 (dx + m_position.x, dy + m_position.y, 0f));
+					m_blocks [count++].SetPosition (new Vector3 (dx + m_position.x + moveX, dy + m_position.y, 0f));
 				}
 			}
 		}
+
+		m_position.x += moveX;
 	}
 
 	// 落下.
-	public void Fall () {
+	public bool Fall () {
+		int x = (int)(m_position.x);
+		int y = (int)(m_position.y + MoveSpeed);
+		bool [,] fallAlreadyForm = cBlockManager.GetInstance ().GetCollision (x, y, m_size);
+		bool [,] tetriminoForm = cTetriminoManager.GetInstance ().GetTetrimino ().GetForm ();
+		
+		for (int dy = 0; dy < m_size; dy++) {
+			for (int dx = 0; dx < m_size; dx++) {
+				if (tetriminoForm [dy, dx] && fallAlreadyForm [dy, dx]) {
+					return false;
+				}
+			}
+		}
+
+		if (m_position.y >= CheckUnder) {
+			for (int i = 0; i < BlockNum; i++) {
+				if ((GetBlockPosition () [i].y + m_position.y + 1) > MaxUnder) {
+					return false;
+				}
+			}
+		}
+
 		for (int i = 0; i < BlockNum; i++) {
 			m_blocks [i].MovePosition (new Vector3 (0, -MoveSpeed, 0));
 		}
 
 		m_position.y += MoveSpeed;
+
+		return true;
 	}
 
 	// 衝突判定.
 	// 第一引数：ブロックマネージャーから持ってくるポイントx.
 	// 第二引数：ブロックマネージャーから持ってくるポイントy.
 	// 戻り値：０・左側衝突　１・真ん中衝突　２・右側衝突　−１・衝突していない.
-	int CheckCollision (int px, int py) {
-		bool [,] form = cBlockManager.GetInstance ().GetCollision (px, py, m_size);
+	int CheckCollision (bool [,] form, int px, int py) {
+		bool [,] collisionForm = cBlockManager.GetInstance ().GetCollision (px, py, m_size);
 
 		for (int dy = 0; dy < m_size; dy++) {
 			for (int dx = 0; dx < m_size; dx++) {
-				if (m_form [dy, dx] && form [dy, dx]) {
+				if (form [dy, dx] && collisionForm [dy, dx]) {
 					return dx;
 				}
 			}
@@ -357,8 +423,6 @@ public class cTetrimino {
 	}
 
 	public Vector3 GetTetriminoPosition () {
-		Vector3 position = new Vector3 (m_position.x, m_position.y, m_position.z);
-
 		return m_position;
 	}
 
@@ -368,5 +432,9 @@ public class cTetrimino {
 
 	public int GetSize () {
 		return m_size;
+	}
+
+	public cBlock [] GetBlocks () {
+		return m_blocks;
 	}
 }

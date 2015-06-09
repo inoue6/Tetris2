@@ -13,6 +13,8 @@ public class cMaterialManager : MonoBehaviour {
 	Material m_orange;
 	Material m_lightBlue;
 	Material m_yellowGreen;
+	Material m_transparency;
+	Material m_ghost;
 	
 	bool m_initializeFlag = false;		// 初期化フラグ.
 
@@ -48,6 +50,8 @@ public class cMaterialManager : MonoBehaviour {
 			m_purple = AssetDatabase.LoadAssetAtPath ("Assets/Material/Tetrimino/Purple.mat", typeof(Material)) as Material;
 			m_lightBlue = AssetDatabase.LoadAssetAtPath ("Assets/Material/Tetrimino/LightBlue.mat", typeof(Material)) as Material;
 			m_yellowGreen = AssetDatabase.LoadAssetAtPath ("Assets/Material/Tetrimino/YellowGreen.mat", typeof(Material)) as Material;
+			m_transparency = AssetDatabase.LoadAssetAtPath ("Assets/Material/Tetrimino/Transparency.mat", typeof(Material)) as Material;
+			m_ghost = AssetDatabase.LoadAssetAtPath ("Assets/Material/Tetrimino/Ghost.mat", typeof(Material)) as Material;
 		}
 
 		m_initializeFlag = true;
@@ -81,8 +85,13 @@ public class cMaterialManager : MonoBehaviour {
 		case eMaterialType.Blue:
 			material = m_blue;
 			break;
+		case eMaterialType.Transparency:
+			material = m_transparency;
+			break;
+		case eMaterialType.Ghost:
+			material = m_ghost;
+			break;
 		}
-
 		return material;
 	}
 }

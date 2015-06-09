@@ -19,6 +19,8 @@ public enum eMaterialType {
 	Purple,
 	LightBlue,
 	YellowGreen,
+	Transparency,
+	Ghost,
 }
 
 // キーのタイプ.

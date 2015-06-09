@@ -13,7 +13,7 @@ public class cGhost {
 		for (int i = 0; i < BlockNum; i++) {
 			m_blocks [i] = new cBlock ();
 			m_blocks [i].CreateCube ();
-			//m_blocks [i].SetMaterial (eMaterial.Ghost);
+			m_blocks [i].SetMaterial (eMaterialType.Ghost);
 		}
 	}
 
@@ -23,16 +23,17 @@ public class cGhost {
 		int pz = (int)tetrimino.GetTetriminoPosition ().z;
 		Vector3 [] positions = tetrimino.GetBlockPosition ();
 		int size = tetrimino.GetSize ();
+		int startY = (int)tetrimino.GetTetriminoPosition ().y;
 
-		for (int i = 4-size; i+py < MaxFloorDistance; i++) {
-			bool [,] form = cBlockManager.GetInstance ().GetCollision (px, py+i, size);
+		for (int i = startY; i <= MaxFloorDistance; i++) {
+			bool [,] form = cBlockManager.GetInstance ().GetCollision (px, i, size);
 
 			for (int dy = 0; dy < size; dy++) {
 				for (int dx = 0; dx < size; dx++) {
 					if (tetrimino.GetForm () [dy, dx] && form [dy, dx]) {
 						for (int j = 0; j < BlockNum; j++) {
-							m_positions [j] = new Vector3 (positions [j].x+px, positions [j].y+py-i, pz);
-							m_blocks [j].SetPosition (m_positions [j++]);
+							m_positions [j] = new Vector3 (positions [j].x+px, positions [j].y+i-1, pz);
+							m_blocks [j].SetPosition (m_positions [j]);
 						}
 
 						return;
@@ -40,10 +41,10 @@ public class cGhost {
 				}
 			}
 		}
-
+		
 		int floorDistance = MaxFloorDistance;
 
-		for (int i = 0; i <= MaxFloorDistance; i++) {
+		for (int i = startY; i <= MaxFloorDistance; i++) {
 			int moveY = 0;
 			for (int j = 0; j < BlockNum; j++) {
 				if ((positions [j].y+i) > MaxFloorDistance && i < floorDistance) {
@@ -100,7 +101,13 @@ public class cGhost {
 			m_blocks [k].SetPosition (m_positions [k]);
 		}*/
 	}
-	
+
+	public void DeleteGhost () {
+		for (int i = 0; i < BlockNum; i++) {
+			m_blocks [i].SetPosition (new Vector3 (100f, 100f, 0));
+		}
+	}
+
 	public void DeleteGhost (cTetrimino tetrimino) {
 		for (int i = 0; i < BlockNum; i++) {
 			int ghostX = (int)m_positions [i].x;

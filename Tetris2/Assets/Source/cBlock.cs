@@ -4,6 +4,7 @@ using System.Collections;
 public class cBlock {
 	GameObject m_cube;		// キューブオブジェクト.
 	Material m_material = new Material (Shader.Find ("Specular"));		// マテリアル.
+	eMaterialType m_type;
 
 	// キューブオブジェクト生成.
 	public void CreateCube () {
@@ -18,6 +19,9 @@ public class cBlock {
 
 	// マテリアルを設定.
 	public void SetMaterial (eMaterialType type) {
+		if (type != eMaterialType.Transparency) {
+			m_type = type;
+		}
 		m_material = cMaterialManager.GetInstance ().GetMaterial (type);
 
 		Renderer renderer = m_cube.GetComponent<Renderer> ();
@@ -32,5 +36,9 @@ public class cBlock {
 	// ゲームオブジェクト取得.
 	public GameObject GetCube () {
 		return m_cube;
+	}
+
+	public eMaterialType GetType () {
+		return m_type;
 	}
 }

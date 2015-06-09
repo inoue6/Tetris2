@@ -9,7 +9,7 @@ public class cTitleStateManager {
 	}
 
 	private static cTitleStateManager s_instance;		// インスタンス.
-	private eState m_state;		// ステート.
+	private eState m_state = eState.Waiting;		// ステート.
 
 	// コンストラクタ.
 	private cTitleStateManager () {
@@ -34,6 +34,7 @@ public class cTitleStateManager {
 			UpdateWaiting ();
 			break;
 		case eState.TransitionScene:
+			UpdateSceneTransition ();
 			break;
 		}
 	}
@@ -45,6 +46,7 @@ public class cTitleStateManager {
 			StartWaiting ();
 			break;
 		case eState.TransitionScene:
+			StartSceneTransition ();
 			break;
 		}
 		m_state = nextState;
@@ -59,19 +61,18 @@ public class cTitleStateManager {
 	void UpdateWaiting () {
 		if (Input.GetKeyDown (KeyCode.Return)) {
 			Transit (eState.TransitionScene);
-			cSceneManager.GetInstance ().SetNextScene (eScene.GameMain);
-			GameObject ob = GameObject.Find ("StateManager");
-			ob.AddComponent<cSceneManager> ();
 		}
 	}
 
 	// 遷移のスタート.
 	void StartSceneTransition () {
-
+		cSceneManager.GetInstance ().SetNextScene (eScene.GameMain);
+		GameObject ob = GameObject.Find ("StateManager");
+		ob.AddComponent<cSceneManager> ();
 	}
 
 	// 遷移の更新.
 	void UpdateSceneTransition () {
-	
+		Transit (eState.Waiting);
 	}
 }
