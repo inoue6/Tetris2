@@ -149,6 +149,7 @@ public class cGameMainManager : MonoBehaviour {
 		m_ghost = new cGhost ();
 		m_ghost.CreateGhost ();
 		m_ghost.SetGhost (cTetriminoManager.GetInstance ().GetTetrimino ());
+		m_ghost.DeleteGhost (cTetriminoManager.GetInstance ().GetTetrimino ());
 	}
 
 	void UpdateGameStart () {
@@ -172,6 +173,7 @@ public class cGameMainManager : MonoBehaviour {
 					for (int i = 0; i < BlockNum; i++) {
 						Destroy (cTetriminoManager.GetInstance ().GetTetrimino ().GetBlocks () [i].GetCube ());
 					}
+					m_ghost.DeleteGhost ();
 					Transit (eState.GameOver);
 					return;
 				}
@@ -197,6 +199,7 @@ public class cGameMainManager : MonoBehaviour {
 	void StartSetNext () {
 		cTetriminoManager.GetInstance ().SetNext ();
 		m_ghost.SetGhost (cTetriminoManager.GetInstance ().GetTetrimino ());
+		m_ghost.DeleteGhost (cTetriminoManager.GetInstance ().GetTetrimino ());
 		m_waitTime = 0f;
 	}
 
@@ -264,6 +267,7 @@ public class cGameMainManager : MonoBehaviour {
 
 		if (m_state != eState.Flashing) {
 			m_ghost.SetGhost (cTetriminoManager.GetInstance ().GetTetrimino ());
+			m_ghost.DeleteGhost (cTetriminoManager.GetInstance ().GetTetrimino ());
 		}
 	}
 
