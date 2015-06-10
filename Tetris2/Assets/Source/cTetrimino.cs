@@ -267,8 +267,8 @@ public class cTetrimino {
 			return;
 		}
 
+		// 回転後のテトリミノの形状.
 		bool [,] afterForm = new bool [m_size, m_size];
-
 		int [] afterX = new int [BlockNum];
 		int [] afterY = new int [BlockNum];
 		int count = 0;
@@ -285,37 +285,50 @@ public class cTetrimino {
 			}
 		}
 
+		for (int i = 0; i < BlockNum; i++) {
+			int blockPositionY = (int)(afterY [i] + m_position.y);
+			if (blockPositionY > MaxUnder) {
+				return;
+			}
+		}
+
 		int px = (int)m_position.x;
 		int py = (int)m_position.y;
 		int check = CheckCollision (afterForm, px, py);
 		int moveX = 0;
 
+		if (check == 3) {
+			return;
+		}
 		if (check == 0) {
 			if (m_type == I_Tetrimino) {
 				return;
 			}
-			if (CheckCollision (afterForm, px+1, py) != -1) {
-				return;
+			for (int i = 0; i < BlockNum; i++) {
+				int blockPosition = (int)(afterX [i] + m_position.x);
+				if (CheckCollision (afterForm, px+1, py) != -1 || blockPosition+1 >= RightWall) {
+					return;
+				}
 			}
-			else {
-				moveX = 1;
-			}
+			moveX = 1;
 		}
 		if (check == 2) {
 			if (m_type == I_Tetrimino) {
 				return;
 			}
-			if (CheckCollision (afterForm, px+1, py) != -1) {
-				return;
+			for (int i = 0; i < BlockNum; i++) {
+				int blockPosition = (int)(afterX [i] + m_position.x);
+				if (CheckCollision (afterForm, px-1, py) != -1 || blockPosition-1 <= LeftWall) {
+					return;
+				}
 			}
-			else {
-				moveX = -1;
-			}
+			moveX = -1;
 		}
 		if (check == 1) {
 			return;
 		}
 
+		// 壁を蹴る時.
 		for (int i = 0; i < BlockNum; i++) {
 			int blockPosition = (int)(afterX [i] + m_position.x);
 			if (blockPosition <= LeftWall) {

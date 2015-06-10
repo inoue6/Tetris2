@@ -46,7 +46,8 @@ public class cTetriminoManager {
 
 	public void CreateTatrimino () {
 		m_tetrimino = new cTetrimino ();
-		m_tetrimino.CreateTatrimino (m_orders.First.Value);
+		//cTetrimino
+		m_tetrimino.CreateTatrimino (cTetrimino.L_Tetrimino);
 		m_orders.RemoveFirst ();
 		AddOrder ();
 	}

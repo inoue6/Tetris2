@@ -248,6 +248,11 @@ public class cGameMainManager : MonoBehaviour {
 			cTetriminoManager.GetInstance ().GetTetrimino ().Rotation (cTetriminoManager.GetInstance ().GetTetrimino ().GetSize ()-1, 0);
 		}
 
+		if (m_state != eState.Flashing) {
+			m_ghost.SetGhost (cTetriminoManager.GetInstance ().GetTetrimino ());
+			m_ghost.DeleteGhost (cTetriminoManager.GetInstance ().GetTetrimino ());
+		}
+
 		if (m_time >= m_speed) {
 			FallTetrimino ();
 			m_time = 0f;
@@ -263,11 +268,6 @@ public class cGameMainManager : MonoBehaviour {
 		}
 		if (Input.GetKeyUp (KeyCode.DownArrow)) {
 			m_downTime = 0.1f;
-		}
-
-		if (m_state != eState.Flashing) {
-			m_ghost.SetGhost (cTetriminoManager.GetInstance ().GetTetrimino ());
-			m_ghost.DeleteGhost (cTetriminoManager.GetInstance ().GetTetrimino ());
 		}
 	}
 
