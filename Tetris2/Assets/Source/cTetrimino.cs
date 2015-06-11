@@ -10,7 +10,8 @@ public class cTetrimino {
 	public const int Z_Tetrimino = 4;
 	public const int L_Tetrimino = 5;
 	public const int J_Tetrimino = 6;
-	
+
+	const int OSize = 2;
 	const int Size = 3;		// 通常のテトリミノ配列のサイズ.
 	const int ISize = 4;		// Iテトリミノの配列のサイズ.
 	const int BlockNum = 4;		// キューブオブジェクトの数.
@@ -122,12 +123,12 @@ public class cTetrimino {
 	}
 
 	public void OForm () {
-		FormSize (Size);
+		FormSize (OSize);
 		
+		m_form [0, 0] = true;
+		m_form [0, 1] = true;
 		m_form [1, 0] = true;
 		m_form [1, 1] = true;
-		m_form [2, 0] = true;
-		m_form [2, 1] = true;
 	}
 
 	// Tテトリミノ.
