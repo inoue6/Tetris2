@@ -170,9 +170,9 @@ public class cGameMainManager : MonoBehaviour {
 		for (int dy = 0; dy < size; dy++) {
 			for (int dx = 0; dx < size; dx++) {
 				if (tetriminoForm [dy, dx] && fallAlreadyForm [dy, dx]) {
-					for (int i = 0; i < BlockNum; i++) {
+					/*for (int i = 0; i < BlockNum; i++) {
 						Destroy (cTetriminoManager.GetInstance ().GetTetrimino ().GetBlocks () [i].GetCube ());
-					}
+					}*/
 					m_ghost.DeleteGhost ();
 					Transit (eState.GameOver);
 					return;
